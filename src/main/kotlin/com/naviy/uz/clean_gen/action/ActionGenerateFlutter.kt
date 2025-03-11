@@ -65,32 +65,34 @@ class ActionGenerateFlutter : AnAction() {
             )
 
             // generate dart files
-            val dataFolder = folder.findChild("data")!!
-            val domainFolder = folder.findChild("domain")!!
+            val dataSourcesFolder = folder.findChild("data")?.findChild("data_sources")!!
+            val repositoriesImplFolder = folder.findChild("data")?.findChild("repositories")!!
+            val repositoriesFolder = folder.findChild("domain")?.findChild("repositories")!!
+            val useCasesFolder = folder.findChild("domain")?.findChild("use_cases")!!
             val presentationFolder = folder.findChild("presentation")!!
             val featureName = root ?: "feature"
 
             Generator.createDartFile(
-                dataFolder, "${featureName.toSnakeCase()}_api_service",
+                dataSourcesFolder, "${featureName.toSnakeCase()}_api_service",
                 Contents.apiServiceContent(featureName, functions, apiPoints)
             )
             Generator.createDartFile(
-                dataFolder, "${featureName.toSnakeCase()}_repository_impl",
+                repositoriesImplFolder, "${featureName.toSnakeCase()}_repository_impl",
                 Contents.repositoryImplContent(featureName, functions)
             )
             Generator.createDartFile(
-                dataFolder, "${featureName.toSnakeCase()}_repository",
+                repositoriesFolder, "${featureName.toSnakeCase()}_repository",
                 Contents.repositoryContent(featureName, functions)
             )
             functions
                 .forEach {
                     Generator.createDartFile(
-                        domainFolder, "${it.toSnakeCase()}_use_case",
+                        useCasesFolder, "${it.toSnakeCase()}_use_case",
                         Contents.useCaseContent(featureName, it)
                     )
                 }
             Generator.createDartFile(
-                dataFolder, "${featureName.toSnakeCase()}_di",
+                folder, "${featureName.toSnakeCase()}_di",
                 Contents.diContent(featureName, functions)
             )
         }

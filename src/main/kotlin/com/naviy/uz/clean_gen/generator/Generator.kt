@@ -55,7 +55,7 @@ interface Generator {
             val dartFileName = "$fileName.dart"
             val dartFile = directory.findOrCreateChildData(this, dartFileName)
             try {
-                VfsUtil.saveText(dartFile, content)
+                VfsUtil.saveText(dartFile, content.trimIndent())
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -86,7 +86,6 @@ abstract class ${name.capitalize()}ApiService {
                 "static const String _${function.toSnakeCase()} = '${apiPoints[index]}';"
             }.joinToString("\n")
         }
-    }
 
     /// REQUESTS
     ${
@@ -97,7 +96,6 @@ abstract class ${name.capitalize()}ApiService {
                 """.trimIndent()
             }.joinToString("\n")
         }
-    }
 }
         """
 
@@ -109,10 +107,6 @@ class ${name.capitalize()}RepositoryImpl with BaseRepository implements ${name.c
   final ${name.capitalize()}ApiService _apiService;
   ${name.capitalize()}RepositoryImpl(this._apiService);
   
-  @override
-  Future<DataState<ResponseModel>> funcName(REQUEST_BODY body) async =>
-    await handleResponse(response: _apiService.funcName(body));
-    
     ${
             functions.mapIndexed { index, function ->
                 """
@@ -122,8 +116,6 @@ class ${name.capitalize()}RepositoryImpl with BaseRepository implements ${name.c
                 """.trimIndent()
             }.joinToString("\n")
         }
-        
-    }
 }
 """
 
@@ -137,7 +129,8 @@ class ${name.capitalize()}RepositoryImpl with BaseRepository implements ${name.c
                 """
     Future<DataState<MODEL_HERE>> ${function}();
                 """.trimIndent()
-            }
+            }.joinToString("\n")
+        }
         }
 """
 
@@ -181,6 +174,6 @@ class ${name.capitalize()}RepositoryImpl with BaseRepository implements ${name.c
     }
 }
 
- fun String.toSnakeCase(): String {
+fun String.toSnakeCase(): String {
     return this.replace(Regex("([a-z])([A-Z]+)"), "$1_$2").lowercase(Locale.ROOT)
 }
