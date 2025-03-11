@@ -1,6 +1,5 @@
 package com.naviy.uz.clean_gen.generator
 
-import ai.grazie.utils.capitalize
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
@@ -77,8 +76,8 @@ import 'package:dio/dio.dart';
 part '${name}_api_service.g.dart';
 
 @RestApi()
-abstract class ${name.capitalize()}ApiService {
-    factory ${name.capitalize()}ApiService(Dio dio, {String baseUrl}) = _${name.capitalize()}ApiService;
+abstract class ${name.toCamelCase()}ApiService {
+    factory ${name.toCamelCase()}ApiService(Dio dio, {String baseUrl}) = _${name.toCamelCase()}ApiService;
     
     /// URLS
     ${
@@ -103,9 +102,9 @@ abstract class ${name.capitalize()}ApiService {
             name: String,
             functions: List<String>,
         ): String = """
-class ${name.capitalize()}RepositoryImpl with BaseRepository implements ${name.capitalize()}Repository {
-  final ${name.capitalize()}ApiService _apiService;
-  ${name.capitalize()}RepositoryImpl(this._apiService);
+class ${name.toCamelCase()}RepositoryImpl with BaseRepository implements ${name.toCamelCase()}Repository {
+  final ${name.toCamelCase()}ApiService _apiService;
+  ${name.toCamelCase()}RepositoryImpl(this._apiService);
   
     ${
             functions.mapIndexed { index, function ->
@@ -123,7 +122,7 @@ class ${name.capitalize()}RepositoryImpl with BaseRepository implements ${name.c
             name: String,
             functions: List<String>,
         ): String = """
-            abstract class ${name.capitalize()}Repository {
+            abstract class ${name.toCamelCase()}Repository {
     ${
             functions.mapIndexed { _, function ->
                 """
@@ -138,10 +137,10 @@ class ${name.capitalize()}RepositoryImpl with BaseRepository implements ${name.c
             name: String,
             function: String
         ): String = """
-            class ${function.capitalize()}UseCase implements UseCase<DataState<MODEL_HERE>, REQUEST_BODY> {
-  final ${name.capitalize()}Repository _repository;
+            class ${function.toCamelCase()}UseCase implements UseCase<DataState<MODEL_HERE>, REQUEST_BODY> {
+  final ${name.toCamelCase()}Repository _repository;
 
-  ${function.capitalize()}UseCase(this._repository);
+  ${function.toCamelCase()}UseCase(this._repository);
 
   @override
   Future<DataState<MODEL_HERE>> call({required REQUEST_BODY params}) async => 
@@ -155,20 +154,20 @@ class ${name.capitalize()}RepositoryImpl with BaseRepository implements ${name.c
         ): String = """
             Future<void> ${name.toSnakeCase()}DI() async {
   // DataSources
-  locator.registerSingleton(${name.capitalize()}ApiService(locator()));
+  locator.registerSingleton(${name.toCamelCase()}ApiService(locator()));
 
   // Repositories
-  locator.registerSingleton<${name.capitalize()}Repository>(${name.capitalize()}RepositoryImpl(locator()));
+  locator.registerSingleton<${name.toCamelCase()}Repository>(${name.toCamelCase()}RepositoryImpl(locator()));
 
   // UseCases
   ${
             functions.joinToString("\n") { function ->
-                "locator.registerSingleton(${function.capitalize()}UseCase(locator()));"
+                "locator.registerSingleton(${function.toCamelCase()}UseCase(locator()));"
             }
         }
 
   // Blocs
-  locator.registerFactory<${name.capitalize()}Cubit>(() => ${name.capitalize()}Cubit());
+  locator.registerFactory<${name.toCamelCase()}Cubit>(() => ${name.toCamelCase()}Cubit());
 }
            """
     }
@@ -176,4 +175,8 @@ class ${name.capitalize()}RepositoryImpl with BaseRepository implements ${name.c
 
 fun String.toSnakeCase(): String {
     return this.replace(Regex("([a-z])([A-Z]+)"), "$1_$2").lowercase(Locale.ROOT)
+}
+
+fun String.toCamelCase(): String {
+    return this.split("_").joinToString("") { it.toCamelCase() }
 }
