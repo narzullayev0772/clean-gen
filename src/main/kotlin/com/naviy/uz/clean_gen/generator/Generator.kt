@@ -152,7 +152,7 @@ class ${name.toCamelCase()}RepositoryImpl with BaseRepository implements ${name.
             name: String,
             functions: List<String>,
         ): String = """
-            Future<void> ${name.toSnakeCase()}DI() async {
+            Future<void> ${name.toCamelCase()}DI() async {
   // DataSources
   locator.registerSingleton(${name.toCamelCase()}ApiService(locator()));
 
