@@ -2,43 +2,104 @@ package com.naviy.uz.clean_gen.ui
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import javax.swing.JCheckBox
+import java.awt.BorderLayout
+import java.awt.FlowLayout
+import java.awt.GridLayout
+import javax.swing.BoxLayout
+import javax.swing.JButton
 import javax.swing.JComponent
+import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 
-/**
- * Creates a [DialogWrapper] to get the feature name
- */
-class FeatureDialog(project: Project?) :
-    DialogWrapper(project) {
-    private var contentPanel: JPanel? = null
-    private var nameTextField: JTextField? = null
-    private var splitDataSource: JCheckBox? = null
-
-    /**
-     * @return feature name
-     */
-    fun getName(): String? = nameTextField?.text
-
-    /**
-     * @return split data sources
-     */
-    fun splitSource(): Boolean? = splitDataSource?.isSelected
-
-    override fun createCenterPanel(): JComponent? {
-        return contentPanel
-    }
-
-    /**
-     * Sets focus on the text field
-     */
-    override fun getPreferredFocusedComponent(): JComponent? {
-        return nameTextField
-    }
+class FeatureDialog(project: Project?) : DialogWrapper(project) {
+    private val contentPanel = JPanel(BorderLayout())
+    private val nameTextField = JTextField(35)
+    private val functionsPanel = JPanel()
+    private val functionsNameTextFields = mutableListOf<JTextField>()
+    private val apiPointTextFields = mutableListOf<JTextField>()
+    private val addFunctionButton = JButton("+") // Qo‘shimcha input qo‘shish tugmasi
+    private val removeFunctionButton = JButton("-") // O‘chirish tugmasi
 
     init {
-        init()
         title = "Clean-Architecture Generator"
+        initUI()
+        init()
     }
+
+    private fun initUI() {
+        contentPanel.layout = BoxLayout(contentPanel, BoxLayout.Y_AXIS)
+
+        val namePanel = JPanel(FlowLayout(FlowLayout.LEFT))
+        namePanel.add(JLabel("Feature Name:"))
+        namePanel.add(nameTextField)
+        contentPanel.add(namePanel)
+        val functionsLabelPanel = JPanel(FlowLayout(FlowLayout.LEFT))
+        functionsLabelPanel.add(JLabel("Functions and API Points:"))
+        contentPanel.add(functionsLabelPanel)
+
+        val functionsContainer = JPanel()
+        functionsContainer.layout = BoxLayout(functionsContainer, BoxLayout.Y_AXIS)
+
+        // **GridLayout bilan ustun formatda joylashuv**
+        functionsPanel.layout = GridLayout(0, 1) // 0 = cheksiz qator, 1 = faqat bitta ustun
+        functionsContainer.add(functionsPanel)
+
+        val addFunctionPanel = JPanel(FlowLayout(FlowLayout.LEFT))
+        addFunctionPanel.add(addFunctionButton)
+        addFunctionPanel.add(removeFunctionButton)
+        functionsContainer.add(addFunctionPanel)
+
+        contentPanel.add(functionsContainer)
+
+        addFunctionButton.addActionListener {
+            addFunctionField()
+        }
+        removeFunctionButton.addActionListener {
+            removeFunctionField()
+        }
+    }
+
+    private fun addFunctionField() {
+        // **Yangi function uchun input**
+        val functionField = JTextField(20)
+        // placeholder
+        functionsNameTextFields.add(functionField)
+
+        // **Yangi api point uchun input**
+        val apiPointField = JTextField(20)
+        apiPointField.text = "/"
+        apiPointTextFields.add(apiPointField)
+
+        // **Har bir function uchun panel**
+        val functionPanel = JPanel()
+        functionPanel.layout = FlowLayout(FlowLayout.LEFT)
+        functionPanel.add(functionField)
+        functionPanel.add(apiPointField)
+        // **Ustun bo‘ylab qo‘shish**
+        functionsPanel.add(functionPanel)
+
+        functionsPanel.revalidate()
+        functionsPanel.repaint()
+    }
+
+    private fun removeFunctionField() {
+        if (functionsNameTextFields.isNotEmpty()) {
+            val lastFunctionField = functionsNameTextFields.removeLast()
+            val lastApiPointField = apiPointTextFields.removeLast()
+            functionsPanel.remove(lastFunctionField.parent)
+            functionsPanel.remove(lastApiPointField.parent)
+            functionsPanel.revalidate()
+            functionsPanel.repaint()
+        }
+    }
+
+
+    override fun createCenterPanel(): JComponent = contentPanel
+
+    override fun getPreferredFocusedComponent(): JComponent = nameTextField
+
+    fun getName(): String = nameTextField.text
+
+    fun getFunctionsName(): List<String> = functionsNameTextFields.map { it.text }
 }

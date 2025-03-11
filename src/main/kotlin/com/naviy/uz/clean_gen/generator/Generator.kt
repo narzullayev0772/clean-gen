@@ -1,6 +1,7 @@
 package com.naviy.uz.clean_gen.generator
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.naviy.uz.clean_gen.ui.Notifier
 import java.io.IOException
@@ -43,30 +44,17 @@ interface Generator {
         }
 
 
-        fun createDartFileInFolder(
-            project: Project,
-            folder: VirtualFile,
-            parent: String,
-            vararg children: String
-        ): Map<String, VirtualFile>? {
+        private fun createDartFile(
+            directory: VirtualFile,
+            fileName: String,
+            content: String
+        ) {
+            val dartFileName = "$fileName.dart"
+            val dartFile = directory.findOrCreateChildData(this, dartFileName)
             try {
-                for (child in folder.children) {
-                    if (child.name == parent) {
-                        Notifier.warning(project, "Directory [$parent] already exists")
-                        return null
-                    }
-                }
-                val mapOfFolder = mutableMapOf<String, VirtualFile>()
-                mapOfFolder[parent] = folder.createChildDirectory(folder, parent)
-                for (child in children) {
-                    mapOfFolder[child] =
-                        mapOfFolder[parent]?.createChildDirectory(mapOfFolder[parent], child) ?: throw IOException()
-                }
-                return mapOfFolder
+                VfsUtil.saveText(dartFile, content)
             } catch (e: IOException) {
-                Notifier.warning(project, "Couldn't create $parent directory")
                 e.printStackTrace()
-                return null
             }
         }
     }
