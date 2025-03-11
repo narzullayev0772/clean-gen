@@ -63,7 +63,6 @@ class FeatureDialog(project: Project?) : DialogWrapper(project) {
     private fun addFunctionField() {
         // **Yangi function uchun input**
         val functionField = JTextField(20)
-        // placeholder
         functionsNameTextFields.add(functionField)
 
         // **Yangi api point uchun input**
@@ -102,4 +101,6 @@ class FeatureDialog(project: Project?) : DialogWrapper(project) {
     fun getName(): String = nameTextField.text
 
     fun getFunctionsName(): List<String> = functionsNameTextFields.map { it.text }
+
+    fun getApiPoints(): List<String> = apiPointTextFields.map { it.text }
 }
