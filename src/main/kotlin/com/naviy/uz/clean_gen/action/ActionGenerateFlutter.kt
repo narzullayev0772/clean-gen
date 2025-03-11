@@ -6,7 +6,9 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
+import com.naviy.uz.clean_gen.generator.Contents
 import com.naviy.uz.clean_gen.generator.Generator
+import com.naviy.uz.clean_gen.generator.toSnakeCase
 import com.naviy.uz.clean_gen.ui.FeatureDialog
 
 class ActionGenerateFlutter : AnAction() {
@@ -60,6 +62,36 @@ class ActionGenerateFlutter : AnAction() {
                 project, folder,
                 "presentation",
                 "manager", "pages", "widgets"
+            )
+
+            // generate dart files
+            val dataFolder = folder.findChild("data")!!
+            val domainFolder = folder.findChild("domain")!!
+            val presentationFolder = folder.findChild("presentation")!!
+            val featureName = root ?: "feature"
+
+            Generator.createDartFile(
+                dataFolder, "${featureName.toSnakeCase()}_api_service",
+                Contents.apiServiceContent(featureName, functions, apiPoints)
+            )
+            Generator.createDartFile(
+                dataFolder, "${featureName.toSnakeCase()}_repository_impl",
+                Contents.repositoryImplContent(featureName, functions)
+            )
+            Generator.createDartFile(
+                dataFolder, "${featureName.toSnakeCase()}_repository",
+                Contents.repositoryContent(featureName, functions)
+            )
+            functions
+                .forEach {
+                    Generator.createDartFile(
+                        domainFolder, "${it.toSnakeCase()}_use_case",
+                        Contents.useCaseContent(featureName, it)
+                    )
+                }
+            Generator.createDartFile(
+                dataFolder, "${featureName.toSnakeCase()}_di",
+                Contents.diContent(featureName, functions)
             )
         }
     }

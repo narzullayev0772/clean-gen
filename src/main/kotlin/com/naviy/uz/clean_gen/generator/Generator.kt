@@ -47,7 +47,7 @@ interface Generator {
         }
 
 
-        private fun createDartFile(
+        fun createDartFile(
             directory: VirtualFile,
             fileName: String,
             content: String
@@ -181,6 +181,6 @@ class ${name.capitalize()}RepositoryImpl with BaseRepository implements ${name.c
     }
 }
 
-private fun String.toSnakeCase(): String {
+ fun String.toSnakeCase(): String {
     return this.replace(Regex("([a-z])([A-Z]+)"), "$1_$2").lowercase(Locale.ROOT)
 }
