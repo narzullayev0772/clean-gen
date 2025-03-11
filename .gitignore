@@ -43,4 +43,3 @@ bin/
 # Project exclude paths
 /.run/
 /gradle/
-/src/

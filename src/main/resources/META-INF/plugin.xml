@@ -1,0 +1,22 @@
+<idea-plugin>
+    <id>com.naviy.uz.clean_gen</id>
+    <name>Clean Generator for Flutter</name>
+    <vendor email="support@naviy.com" url="https://www.yourcompany.com">Naviy</vendor>
+    <description>Clean Generator Description of the plugin displayed on the Plugin Page and IDE
+        Plugin Manager.
+    </description>
+    <depends>com.intellij.modules.platform</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup displayType="BALLOON" id="CleanArchitectureGenerator" />
+    </extensions>
+    <actions>
+        <group class="com.naviy.uz.clean_gen.action.ActionGroup"
+            description="Choose a Clean-Architecture variant" id="com.naviy.uz.clean_gen"
+            popup="true" text="Clean Gen">
+            <add-to-group anchor="after" group-id="NewGroup" relative-to-action="NewDir" />
+            <action class="com.naviy.uz.clean_gen.action.ActionGenerateFlutter"
+                description="Generate a new Clean-Architecture for Flutter"
+                id="com.naviy.uz.clean_gen.action.ActionGenerateFlutter" text="Flutter" />
+        </group>
+    </actions>
+</idea-plugin>
