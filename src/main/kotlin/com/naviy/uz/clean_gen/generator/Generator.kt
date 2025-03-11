@@ -88,7 +88,7 @@ abstract class ${name.toCamelCase()}ApiService {
 
     /// REQUESTS
     ${
-            functions.mapIndexed { index, function ->
+            functions.mapIndexed { _, function ->
                 """
     @GET(_${function.toSnakeCase()})
     Future<HttpResponse<BaseResponse<MODEL_HERE>>> ${function}();
@@ -178,5 +178,9 @@ fun String.toSnakeCase(): String {
 }
 
 fun String.toCamelCase(): String {
-    return this.split("_").joinToString("") { it.toCamelCase() }
+    return this.split("_").joinToString("") { it.replaceFirstChar { char ->
+        if (char.isLowerCase()) char.titlecase(
+            Locale.getDefault()
+        ) else char.toString()
+    } }
 }
