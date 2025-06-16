@@ -18,6 +18,7 @@ class FeatureDialog(project: Project?) : DialogWrapper(project) {
     private val functionsPanel = JPanel()
     private val functionsNameTextFields = mutableListOf<JTextField>()
     private val apiPointTextFields = mutableListOf<JTextField>()
+    private val modelNameTextFields = mutableListOf<JTextField>()
     private val addFunctionButton = JButton("+") // Qo‘shimcha input qo‘shish tugmasi
     private val removeFunctionButton = JButton("-") // O‘chirish tugmasi
 
@@ -70,6 +71,10 @@ class FeatureDialog(project: Project?) : DialogWrapper(project) {
         apiPointField.text = "/"
         apiPointTextFields.add(apiPointField)
 
+        // **Qo‘shimcha model uchun input**
+        val modelField = JTextField(20)
+        modelNameTextFields.add(modelField)
+
         // **Har bir function uchun panel**
         val functionPanel = JPanel()
         functionPanel.layout = FlowLayout(FlowLayout.LEFT)
@@ -86,8 +91,10 @@ class FeatureDialog(project: Project?) : DialogWrapper(project) {
         if (functionsNameTextFields.isNotEmpty()) {
             val lastFunctionField = functionsNameTextFields.removeLast()
             val lastApiPointField = apiPointTextFields.removeLast()
+            val lastModelField = modelNameTextFields.removeLast()
             functionsPanel.remove(lastFunctionField.parent)
             functionsPanel.remove(lastApiPointField.parent)
+            functionsPanel.remove(lastModelField.parent)
             functionsPanel.revalidate()
             functionsPanel.repaint()
         }
@@ -103,4 +110,6 @@ class FeatureDialog(project: Project?) : DialogWrapper(project) {
     fun getFunctionsName(): List<String> = functionsNameTextFields.map { it.text }
 
     fun getApiPoints(): List<String> = apiPointTextFields.map { it.text }
+
+    fun getModelsName(): List<String> = modelNameTextFields.map { it.text }
 }

@@ -68,7 +68,8 @@ class Contents {
         fun apiServiceContent(
             name: String,
             functions: List<String>,
-            apiPoints: List<String>
+            apiPoints: List<String>,
+            models: List<String>
         ): String = """
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
@@ -91,7 +92,9 @@ abstract class ${name.toCamelCase()}ApiService {
             functions.mapIndexed { _, function ->
                 """
     @GET(_${function.toSnakeCase()})
-    Future<HttpResponse<BaseResponse<MODEL_HERE>>> ${function}();
+    Future<HttpResponse<BaseResponse<${
+                    models.getOrNull(functions.indexOf(function)) ?: "MODEL_HERE"
+                }>>> ${function}();
                 """.trimIndent()
             }.joinToString("\n")
         }
@@ -101,6 +104,7 @@ abstract class ${name.toCamelCase()}ApiService {
         fun repositoryImplContent(
             name: String,
             functions: List<String>,
+            models: List<String>
         ): String = """
 class ${name.toCamelCase()}RepositoryImpl with BaseRepository implements ${name.toCamelCase()}Repository {
   final ${name.toCamelCase()}ApiService _apiService;
@@ -110,7 +114,9 @@ class ${name.toCamelCase()}RepositoryImpl with BaseRepository implements ${name.
             functions.mapIndexed { index, function ->
                 """
     @override
-    Future<DataState<MODEL_HERE>> ${function}(REQUEST_BODY body) async =>
+    Future<DataState<${
+                    models.getOrNull(functions.indexOf(function)) ?: "MODEL_HERE"
+                }>> ${function}(REQUEST_BODY body) async =>
         await handleResponse(response: _apiService.${function}(body));
                 """.trimIndent()
             }.joinToString("\n")
@@ -121,12 +127,15 @@ class ${name.toCamelCase()}RepositoryImpl with BaseRepository implements ${name.
         fun repositoryContent(
             name: String,
             functions: List<String>,
+            models: List<String>
         ): String = """
             abstract class ${name.toCamelCase()}Repository {
     ${
             functions.mapIndexed { _, function ->
                 """
-    Future<DataState<MODEL_HERE>> ${function}();
+    Future<DataState<${
+                    models.getOrNull(functions.indexOf(function)) ?: "MODEL_HERE"
+                }>> ${function}();
                 """.trimIndent()
             }.joinToString("\n")
         }
@@ -135,15 +144,18 @@ class ${name.toCamelCase()}RepositoryImpl with BaseRepository implements ${name.
 
         fun useCaseContent(
             name: String,
-            function: String
+            function: String,
+            model: String?
         ): String = """
-            class ${function.toCamelCase()}UseCase implements UseCase<DataState<MODEL_HERE>, REQUEST_BODY> {
+            class ${function.toCamelCase()}UseCase implements UseCase<DataState<${
+            model ?: "MODEL_HERE"
+        }>, REQUEST_BODY> {
   final ${name.toCamelCase()}Repository _repository;
 
   ${function.toCamelCase()}UseCase(this._repository);
 
   @override
-  Future<DataState<MODEL_HERE>> call({required REQUEST_BODY params}) async => 
+  Future<DataState<${model ?: "MODEL_HERE"}>> call({required REQUEST_BODY params}) async => 
         await _repository.${function}(params);
 }
 """
@@ -178,9 +190,11 @@ fun String.toSnakeCase(): String {
 }
 
 fun String.toCamelCase(): String {
-    return this.split("_").joinToString("") { it.replaceFirstChar { char ->
-        if (char.isLowerCase()) char.titlecase(
-            Locale.getDefault()
-        ) else char.toString()
-    } }
+    return this.split("_").joinToString("") {
+        it.replaceFirstChar { char ->
+            if (char.isLowerCase()) char.titlecase(
+                Locale.getDefault()
+            ) else char.toString()
+        }
+    }
 }

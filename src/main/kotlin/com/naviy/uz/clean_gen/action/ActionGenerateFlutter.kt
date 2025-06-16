@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.naviy.uz.clean_gen.generator.Contents
 import com.naviy.uz.clean_gen.generator.Generator
+import com.naviy.uz.clean_gen.generator.toCamelCase
 import com.naviy.uz.clean_gen.generator.toSnakeCase
 import com.naviy.uz.clean_gen.ui.FeatureDialog
 
@@ -22,7 +23,8 @@ class ActionGenerateFlutter : AnAction() {
                 actionEvent.dataContext,
                 dialog.getName(),
                 dialog.getFunctionsName(),
-                dialog.getApiPoints()
+                dialog.getApiPoints(),
+                dialog.getModelsName()
             )
         }
     }
@@ -35,7 +37,8 @@ class ActionGenerateFlutter : AnAction() {
         dataContext: DataContext,
         root: String?,
         functions: List<String>,
-        apiPoints: List<String>
+        apiPoints: List<String>,
+        models: List<String>
     ) {
         val project = CommonDataKeys.PROJECT.getData(dataContext) ?: return
         val selected = PlatformDataKeys.VIRTUAL_FILE.getData(dataContext) ?: return
@@ -66,6 +69,7 @@ class ActionGenerateFlutter : AnAction() {
 
             // generate dart files
             val dataSourcesFolder = folder.findChild("data")?.findChild("data_sources")!!
+            val modelsFolder = folder.findChild("data")?.findChild("models")!!
             val repositoriesImplFolder = folder.findChild("data")?.findChild("repositories")!!
             val repositoriesFolder = folder.findChild("domain")?.findChild("repositories")!!
             val useCasesFolder = folder.findChild("domain")?.findChild("use_cases")!!
@@ -74,21 +78,29 @@ class ActionGenerateFlutter : AnAction() {
 
             Generator.createDartFile(
                 dataSourcesFolder, "${featureName.toSnakeCase()}_api_service",
-                Contents.apiServiceContent(featureName, functions, apiPoints)
+                Contents.apiServiceContent(featureName, functions, apiPoints, models)
+            )
+            models.forEach(
+                fun(model) {
+                    Generator.createDartFile(
+                        modelsFolder, model.toSnakeCase(),
+                        "class ${model.toCamelCase()} {}"
+                    )
+                }
             )
             Generator.createDartFile(
                 repositoriesImplFolder, "${featureName.toSnakeCase()}_repository_impl",
-                Contents.repositoryImplContent(featureName, functions)
+                Contents.repositoryImplContent(featureName, functions,models)
             )
             Generator.createDartFile(
                 repositoriesFolder, "${featureName.toSnakeCase()}_repository",
-                Contents.repositoryContent(featureName, functions)
+                Contents.repositoryContent(featureName, functions,models)
             )
             functions
                 .forEach {
                     Generator.createDartFile(
                         useCasesFolder, "${it.toSnakeCase()}_use_case",
-                        Contents.useCaseContent(featureName, it)
+                        Contents.useCaseContent(featureName, it, models.getOrNull(functions.indexOf(it)))
                     )
                 }
             Generator.createDartFile(
