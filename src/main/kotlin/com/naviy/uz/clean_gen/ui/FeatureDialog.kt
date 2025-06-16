@@ -80,6 +80,7 @@ class FeatureDialog(project: Project?) : DialogWrapper(project) {
         functionPanel.layout = FlowLayout(FlowLayout.LEFT)
         functionPanel.add(functionField)
         functionPanel.add(apiPointField)
+        functionPanel.add(modelField)
         // **Ustun bo‘ylab qo‘shish**
         functionsPanel.add(functionPanel)
 
