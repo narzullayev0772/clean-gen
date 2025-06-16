@@ -36,7 +36,9 @@ class FeatureDialog(project: Project?) : DialogWrapper(project) {
         namePanel.add(nameTextField)
         contentPanel.add(namePanel)
         val functionsLabelPanel = JPanel(FlowLayout(FlowLayout.LEFT))
-        functionsLabelPanel.add(JLabel("Functions and API Points:"))
+        functionsLabelPanel.add(JLabel("Function Names:"))
+        functionsLabelPanel.add(JLabel("API Points:"))
+        functionsLabelPanel.add(JLabel("Model Names:"))
         contentPanel.add(functionsLabelPanel)
 
         val functionsContainer = JPanel()

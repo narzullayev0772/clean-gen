@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.naviy.uz.clean_gen</id>
     <name>Clean Generator for Flutter</name>
-    <vendor email="support@naviy.com" url="https://www.yourcompany.com">Naviy</vendor>
+    <vendor email="support@naviy.com" url="https://www.naviy.uz">Naviy</vendor>
     <description>Clean Generator Description of the plugin displayed on the Plugin Page and IDE
         Plugin Manager.
     </description>
