@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.naviy.uz"
-version = "1.1-SNAPSHOT"
+version = "1.1.1"
 
 repositories {
     mavenCentral()
@@ -32,7 +32,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("232")
-        untilBuild.set("242.*")
+        untilBuild.set("243.*")
     }
 
     signPlugin {
