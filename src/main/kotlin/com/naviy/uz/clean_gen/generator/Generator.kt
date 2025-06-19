@@ -97,7 +97,7 @@ abstract class ${name.toCamelCase()}ApiService {
     ${
             functions.mapIndexed { _, function ->
                 """
-    @GET(_${function.toSnakeCase()})
+    @GET(_${function})
     Future<HttpResponse<BaseResponse<${
                     models.getOrNull(functions.indexOf(function)) ?: "MODEL_HERE"
                 }>>> ${function}();
