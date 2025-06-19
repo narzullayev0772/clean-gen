@@ -212,23 +212,41 @@ import 'presentation/manager/${name.toSnakeCase()}_cubit.dart';
         }
 
   // Blocs
-  locator.registerFactory<${name.toCamelCase()}Cubit>(() => ${name.toCamelCase()}Cubit());
+  locator.registerFactory<${name.toCamelCase()}Cubit>(() => ${name.toCamelCase()}Cubit(
+  ${
+            functions.joinToString("\n") { _ ->
+                "locator(),"
+            }
+        }
+  ));
 }
            """
 
         fun cubitContent(
             featureName: String,
             functions: List<String>,
+            models: List<String>,
         ): String {
             return """
+                    import 'package:bloc/bloc.dart';
+                    ${
+                functions.mapIndexed { _, function ->
+                    "import '../../domain/use_cases/${function.toSnakeCase()}_use_case.dart';"
+                }.joinToString("")
+            }
+            ${
+                models.mapIndexed { _, model ->
+                    "import '../../data/models/${model.toSnakeCase()}.dart';"
+                }.joinToString("")
+            }
                     part '${featureName}_state.dart';
         
                     class ${featureName.toCamelCase()}Cubit extends Cubit<${featureName.toCamelCase()}State> {
                       ${
-                          functions.mapIndexed { _, function ->
-                              "final ${function.toCamelCase()}UseCase _${function}UseCase;"
-                          }.joinToString("")
-                      }
+                functions.mapIndexed { _, function ->
+                    "final ${function.toCamelCase()}UseCase _${function}UseCase;"
+                }.joinToString("")
+            }
                       
                       
   ${featureName.toCamelCase()}Cubit(
@@ -236,20 +254,22 @@ import 'presentation/manager/${name.toSnakeCase()}_cubit.dart';
                 functions.mapIndexed { _, function ->
                     "this._${function}UseCase,"
                 }.joinToString("")
-    }
+            }
   ) : super(${featureName.toCamelCase()}State.initial());
                    
 
       
       ${
-          functions.mapIndexed { _, function ->  """
+                functions.mapIndexed { _, function ->
+                    """
                    Future<void> ${function}(dynamic query) => Fetcher.fetchWithBase(
         fetcher: _${function}UseCase.call(params: query),
         state: state.${function}State,
         emitter: (newState) => emit(state.copyWith(${function}State: newState)),
       );                 
-          """.trimIndent()}.joinToString("")
-      }
+          """.trimIndent()
+                }.joinToString("")
+            }
                     
                     }
                 """.trimIndent()

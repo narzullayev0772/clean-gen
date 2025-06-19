@@ -119,7 +119,7 @@ class ActionGenerateFlutter : AnAction() {
             Generator.createDartFile(
                 managerFolder,
                 "${featureName.toSnakeCase()}_cubit",
-                Contents.cubitContent(featureName, functions)
+                Contents.cubitContent(featureName, functions,models)
             )?.let {
                 createdDartFilesList.add(it)
             }
