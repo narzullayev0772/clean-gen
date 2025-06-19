@@ -234,7 +234,7 @@ import 'presentation/manager/${name.toSnakeCase()}_cubit.dart';
   ${featureName.toCamelCase()}Cubit(
     ${
                 functions.mapIndexed { _, function ->
-                    "_${function}UseCase"
+                    "this._${function}UseCase,"
                 }.joinToString("")
     }
   ) : super(${featureName.toCamelCase()}State.initial());
@@ -248,7 +248,7 @@ import 'presentation/manager/${name.toSnakeCase()}_cubit.dart';
         state: state.${function}State,
         emitter: (newState) => emit(state.copyWith(${function}State: newState)),
       );                 
-          """.trimIndent()}
+          """.trimIndent()}.joinToString("")
       }
                     
                     }
@@ -271,7 +271,7 @@ import 'presentation/manager/${name.toSnakeCase()}_cubit.dart';
                             models.getOrNull(functions.indexOf(function)) ?: "dynamic"
                         }> ${function}State;"
                     }
-                )
+                ).joinToString("")
             }
                       
   ${featureName.toCamelCase()}State({

@@ -71,7 +71,7 @@ class ActionGenerateFlutter : AnAction() {
             val repositoriesImplFolder = folder.findChild("data")?.findChild("repositories")!!
             val repositoriesFolder = folder.findChild("domain")?.findChild("repositories")!!
             val useCasesFolder = folder.findChild("domain")?.findChild("use_cases")!!
-            val presentationFolder = folder.findChild("presentation")!!
+            val managerFolder =  folder.findChild("presentation")?.findChild("manager")!!
             val featureName = root ?: "feature"
             val createdDartFilesList = mutableListOf<VirtualFile>()
             val codeStyleManager = CodeStyleManager.getInstance(project)
@@ -117,7 +117,7 @@ class ActionGenerateFlutter : AnAction() {
             }
             // cubit
             Generator.createDartFile(
-                folder,
+                managerFolder,
                 "${featureName.toSnakeCase()}_cubit",
                 Contents.cubitContent(featureName, functions)
             )?.let {
@@ -125,7 +125,7 @@ class ActionGenerateFlutter : AnAction() {
             }
             // state
             Generator.createDartFile(
-                folder,
+                managerFolder,
                 "${featureName.toSnakeCase()}_state",
                 Contents.stateContent(featureName, functions, models)
             )?.let {
