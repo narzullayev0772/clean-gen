@@ -2,7 +2,7 @@
     <id>com.naviy.uz.clean_gen</id>
     <name>Clean Generator for Flutter</name>
     <vendor email="support@naviy.com" url="https://www.naviy.uz">Naviy</vendor>
-    <description>![CDATA[Clean Generator
+    <description><![CDATA[Clean Generator
         If <b>you are not</b> Flutter developer:
         You shouldn't add function, api point and model manually, plugin create clean code folder structure for you.
 
@@ -15,7 +15,7 @@
         For more information about cubit_base package visit the
         <a href=" https://pub.dev/packages/cubit_base">project site</a>.
         cubit_base is useful for state management.
-    ]]</description>
+    ]]></description>
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup displayType="BALLOON" id="CleanArchitectureGenerator" />
