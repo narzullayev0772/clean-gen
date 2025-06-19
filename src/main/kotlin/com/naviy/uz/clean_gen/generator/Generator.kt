@@ -75,7 +75,11 @@ class Contents {
         ): String = """
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
-
+${
+            models.mapIndexed { _, model ->
+                "import '../models/${model.toSnakeCase()}.dart';"
+            }.joinToString("")
+        }
 part '${name}_api_service.g.dart';
 
 @RestApi()
@@ -85,7 +89,7 @@ abstract class ${name.toCamelCase()}ApiService {
     /// URLS
     ${
             functions.mapIndexed { index, function ->
-                "static const String _${function.toSnakeCase()} = '${apiPoints[index]}';"
+                "static const String _${function.toCamelCase()} = '${apiPoints[index]}';"
             }.joinToString("\n")
         }
 
@@ -108,12 +112,19 @@ abstract class ${name.toCamelCase()}ApiService {
             functions: List<String>,
             models: List<String>
         ): String = """
+import '../../domain/repositories/${name.toSnakeCase()}_repository.dart';
+import '../data_sources/${name.toSnakeCase()}_api_service.dart';
+${
+            models.mapIndexed { _, model ->
+                "import '../models/${model.toSnakeCase()}.dart';"
+            }.joinToString("")
+        }
 class ${name.toCamelCase()}RepositoryImpl with BaseRepository implements ${name.toCamelCase()}Repository {
   final ${name.toCamelCase()}ApiService _apiService;
   ${name.toCamelCase()}RepositoryImpl(this._apiService);
   
     ${
-            functions.mapIndexed { index, function ->
+            functions.mapIndexed { _, function ->
                 """
     @override
     Future<DataState<${
@@ -131,6 +142,11 @@ class ${name.toCamelCase()}RepositoryImpl with BaseRepository implements ${name.
             functions: List<String>,
             models: List<String>
         ): String = """
+${
+            models.mapIndexed { _, model ->
+                "import '../../data/models/${model.toSnakeCase()}.dart';"
+            }.joinToString("")
+        }        
             abstract class ${name.toCamelCase()}Repository {
     ${
             functions.mapIndexed { _, function ->
@@ -149,7 +165,12 @@ class ${name.toCamelCase()}RepositoryImpl with BaseRepository implements ${name.
             function: String,
             model: String?
         ): String = """
-            class ${function.toCamelCase()}UseCase implements UseCase<DataState<${
+import '../../data/models/${model?.toSnakeCase()}.dart';
+
+import '../repositories/${name.toSnakeCase()}_repository.dart';
+
+
+class ${function.toCamelCase()}UseCase implements UseCase<DataState<${
             model ?: "MODEL_HERE"
         }>, REQUEST_BODY> {
   final ${name.toCamelCase()}Repository _repository;
@@ -166,7 +187,13 @@ class ${name.toCamelCase()}RepositoryImpl with BaseRepository implements ${name.
             name: String,
             functions: List<String>,
         ): String = """
-            Future<void> ${name.toCamelCase()}DI() async {
+import 'data/data_sources/${name.toSnakeCase()}_api_service.dart';
+import 'data/repositories/${name.toSnakeCase()}_repository_impl.dart';
+import 'domain/repositories/${name.toSnakeCase()}_repository.dart';
+import 'domain/use_cases/${name.toSnakeCase()}_use_case.dart';
+import 'presentation/manager/${name.toSnakeCase()}_cubit.dart';
+            
+  Future<void> ${name.toCamelCase()}DI() async {
   // DataSources
   locator.registerSingleton(${name.toCamelCase()}ApiService(locator()));
 
@@ -194,9 +221,7 @@ fun String.toSnakeCase(): String {
 fun String.toCamelCase(): String {
     return this.split("_").joinToString("") {
         it.replaceFirstChar { char ->
-            if (char.isLowerCase()) char.titlecase(
-                Locale.getDefault()
-            ) else char.toString()
+            if (char.isLowerCase()) char.titlecase(Locale.getDefault()) else char.toString()
         }
     }
 }
