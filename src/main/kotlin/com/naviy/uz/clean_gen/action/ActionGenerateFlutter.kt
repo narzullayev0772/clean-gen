@@ -115,6 +115,23 @@ class ActionGenerateFlutter : AnAction() {
                     createdDartFilesList.add(it)
                 }
             }
+            // cubit
+            Generator.createDartFile(
+                folder,
+                "${featureName.toSnakeCase()}_cubit",
+                Contents.cubitContent(featureName, functions)
+            )?.let {
+                createdDartFilesList.add(it)
+            }
+            // state
+            Generator.createDartFile(
+                folder,
+                "${featureName.toSnakeCase()}_state",
+                Contents.stateContent(featureName, functions, models)
+            )?.let {
+                createdDartFilesList.add(it)
+            }
+            // di
             Generator.createDartFile(
                 folder,
                 "${featureName.toSnakeCase()}_di",

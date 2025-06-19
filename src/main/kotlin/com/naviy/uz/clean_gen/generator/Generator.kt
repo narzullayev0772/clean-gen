@@ -194,7 +194,7 @@ ${
             functions.mapIndexed { _, function ->
                 "import 'domain/use_cases/${function.toSnakeCase()}_use_case.dart';"
             }.joinToString("")
-}
+        }
 import 'presentation/manager/${name.toSnakeCase()}_cubit.dart';
             
   Future<void> ${name.toCamelCase()}DI() async {
@@ -215,6 +215,100 @@ import 'presentation/manager/${name.toSnakeCase()}_cubit.dart';
   locator.registerFactory<${name.toCamelCase()}Cubit>(() => ${name.toCamelCase()}Cubit());
 }
            """
+
+        fun cubitContent(
+            featureName: String,
+            functions: List<String>,
+        ): String {
+            return """
+                    part '${featureName}_state.dart';
+        
+                    class ${featureName.toCamelCase()}Cubit extends Cubit<${featureName.toCamelCase()}State> {
+                      ${
+                          functions.mapIndexed { _, function ->
+                              "final ${function.toCamelCase()}UseCase _${function}UseCase;"
+                          }.joinToString("")
+                      }
+                      
+                      
+  ${featureName.toCamelCase()}Cubit(
+    ${
+                functions.mapIndexed { _, function ->
+                    "_${function}UseCase"
+                }.joinToString("")
+    }
+  ) : super(${featureName.toCamelCase()}State.initial());
+                   
+
+      
+      ${
+          functions.mapIndexed { _, function ->  """
+                   Future<void> ${function}(dynamic query) => Fetcher.fetchWithBase(
+        fetcher: _${function}UseCase.call(params: query),
+        state: state.${function}State,
+        emitter: (newState) => emit(state.copyWith(${function}State: newState)),
+      );                 
+          """.trimIndent()}
+      }
+                    
+                    }
+                """.trimIndent()
+        }
+
+        fun stateContent(
+            featureName: String,
+            functions: List<String>,
+            models: List<String>
+        ): String {
+            return """
+                    part of '${featureName}_cubit.dart';
+        
+                    class ${featureName.toCamelCase()}State {
+                      ${
+                functions.mapIndexed(
+                    fun(_, function): String {
+                        return "final BaseState<${
+                            models.getOrNull(functions.indexOf(function)) ?: "dynamic"
+                        }> ${function}State;"
+                    }
+                )
+            }
+                      
+  ${featureName.toCamelCase()}State({
+    ${
+                functions.mapIndexed { _, function ->
+                    "required this.${function}State,"
+                }.joinToString("")
+            }
+  });
+  
+    ${featureName.toCamelCase()}State copyWith({
+    ${
+                functions.mapIndexed { _, function ->
+                    "BaseState<${
+                        models.getOrNull(functions.indexOf(function)) ?: "dynamic"
+                    }>? ${function}State,"
+                }.joinToString("")
+            }
+  }) =>
+      ${featureName.toCamelCase()}State(
+        ${
+                functions.mapIndexed { _, function ->
+                    "${function}State: ${function}State ?? this.${function}State,"
+                }.joinToString("")
+            }
+      );
+  
+    factory ${featureName.toCamelCase()}State.initial() => ${featureName.toCamelCase()}State(
+        ${
+                functions.mapIndexed { _, function ->
+                    "${function}State: BaseState.initial(),"
+                }.joinToString("")
+            }
+      );
+                    }
+                """.trimIndent()
+        }
     }
 }
 
