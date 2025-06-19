@@ -50,13 +50,15 @@ interface Generator {
             directory: VirtualFile,
             fileName: String,
             content: String
-        ) {
+        ): VirtualFile? {
             val dartFileName = "$fileName.dart"
             val dartFile = directory.findOrCreateChildData(this, dartFileName)
             try {
                 VfsUtil.saveText(dartFile, content.trimIndent())
+                return dartFile
             } catch (e: IOException) {
                 e.printStackTrace()
+                return null
             }
         }
     }
