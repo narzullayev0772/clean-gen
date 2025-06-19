@@ -3,7 +3,8 @@
     <name>Clean Generator for Flutter</name>
     <vendor email="support@naviy.com" url="https://www.naviy.uz">Naviy</vendor>
     <description><![CDATA[
-    Clean Generator for Flutter
+    <b>Clean Generator for Flutter</b>
+        </br>
         </br>
         If <b>you are not</b> Flutter developer:
         You shouldn't add function, api point and model manually, plugin create clean code folder structure for you.
