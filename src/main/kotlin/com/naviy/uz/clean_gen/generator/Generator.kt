@@ -89,7 +89,7 @@ abstract class ${name.toCamelCase()}ApiService {
     /// URLS
     ${
             functions.mapIndexed { index, function ->
-                "static const String _${function.toCamelCase()} = '${apiPoints[index]}';"
+                "static const String _${function} = '${apiPoints[index]}';"
             }.joinToString("\n")
         }
 
@@ -190,7 +190,11 @@ class ${function.toCamelCase()}UseCase implements UseCase<DataState<${
 import 'data/data_sources/${name.toSnakeCase()}_api_service.dart';
 import 'data/repositories/${name.toSnakeCase()}_repository_impl.dart';
 import 'domain/repositories/${name.toSnakeCase()}_repository.dart';
-import 'domain/use_cases/${name.toSnakeCase()}_use_case.dart';
+${
+            functions.mapIndexed { _, function ->
+                "import 'domain/use_cases/${function.toSnakeCase()}_use_case.dart';"
+            }.joinToString("")
+}
 import 'presentation/manager/${name.toSnakeCase()}_cubit.dart';
             
   Future<void> ${name.toCamelCase()}DI() async {
