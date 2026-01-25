@@ -379,7 +379,7 @@ import 'domain/repositories/${featureName.toSnakeCase()}_repository.dart';
 $useCaseImports
 import 'presentation/manager/${featureName.toSnakeCase()}_cubit.dart';
 
-Future<void> ${featureName.toCamelCase()}DI() async {
+Future<void> ${featureName.toSnakeCase().toCamelCaseField()}DI() async {
     // DataSources
     locator.registerSingleton(${featureName.toCamelCase()}ApiService(locator()));
 
