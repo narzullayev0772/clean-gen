@@ -3,22 +3,35 @@
     <name>Clean Generator for Flutter</name>
     <vendor email="support@naviy.com" url="https://www.naviy.uz">Naviy</vendor>
     <description><![CDATA[
-    <b>Clean Generator for Flutter</b>
-        </br>
-        </br>
-        If <b>you are not</b> Flutter developer:
-        You shouldn't add function, api point and model manually, plugin create clean code folder structure for you.
-        </br>
-        </br>
-        If <b>you are </b>Flutter developer:
+    <b>Clean Generator for Flutter with JSON Support</b>
+        <br/><br/>
+        
+        <h3>🎉 Version 1.2.0 - New Features</h3>
         <ul>
-            <li>Add function, api point and models</li>
-            <li>Plugin generate for state management cubit based structure</li>
-            <li>Plugin use <b>cubit_base</b> package, you should add it to .yaml file</li>
+            <li><b>JSON-Based Model Generation</b> - Paste your JSON request/response and get fully typed Dart models</li>
+            <li><b>HTTP Method Configuration</b> - Support for GET, POST, PUT, DELETE</li>
+            <li><b>Automatic Type Inference</b> - Generates models with proper types from JSON</li>
+            <li><b>Nested Objects & Arrays</b> - Handles complex JSON structures automatically</li>
         </ul>
-        </br>
+        
+        <h3>Features</h3>
+        <ul>
+            <li>Generate Clean Architecture structure for Flutter projects</li>
+            <li>Cubit-based state management with <b>cubit_base</b> package</li>
+            <li>Automatic model generation from JSON (fromJson/toJson included)</li>
+            <li>Retrofit API service with proper HTTP annotations</li>
+            <li>Repository pattern implementation</li>
+            <li>Use cases for business logic</li>
+            <li>Dependency injection setup</li>
+        </ul>
+        
+        <h3>Usage</h3>
+        <p>Right-click on target directory → New → Clean Gen → Flutter (JSON Enhanced)</p>
+        <p>Enter feature name, configure functions with JSON request/response, and generate!</p>
+        
+        <br/>
         For more information about cubit_base package visit the
-        <a href=" https://pub.dev/packages/cubit_base">project site</a>
+        <a href="https://pub.dev/packages/cubit_base">project site</a>
     ]]></description>
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
@@ -30,8 +43,11 @@
             popup="true" text="Clean Gen">
             <add-to-group anchor="after" group-id="NewGroup" relative-to-action="NewDir" />
             <action class="com.naviy.uz.clean_gen.action.ActionGenerateFlutter"
-                description="Generate a new Clean-Architecture for Flutter"
-                id="com.naviy.uz.clean_gen.action.ActionGenerateFlutter" text="Flutter" />
+                description="Generate a new Clean-Architecture for Flutter (Legacy)"
+                id="com.naviy.uz.clean_gen.action.ActionGenerateFlutter" text="Flutter (Legacy)" />
+            <action class="com.naviy.uz.clean_gen.action.ActionGenerateFlutterV2"
+                description="Generate Clean-Architecture with JSON support and HTTP methods"
+                id="com.naviy.uz.clean_gen.action.ActionGenerateFlutterV2" text="Flutter (JSON Enhanced)" />
         </group>
     </actions>
 </idea-plugin>

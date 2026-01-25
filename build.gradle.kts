@@ -5,10 +5,14 @@ plugins {
 }
 
 group = "com.naviy.uz"
-version = "1.1.7"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
+}
+
+dependencies {
+    implementation("org.json:json:20231013")
 }
 
 // Configure Gradle IntelliJ Plugin
