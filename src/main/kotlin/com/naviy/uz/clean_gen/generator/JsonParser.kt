@@ -7,7 +7,7 @@ data class DartField(
     val name: String,
     val type: String,
     val isNullable: Boolean = false,
-    val isList: Boolean = false
+    val isList: Boolean = false,
 )
 
 data class DartClass(
@@ -27,7 +27,7 @@ object JsonParser {
         return try {
             val jsonObject = JSONObject(json)
             parseJsonObject(jsonObject, className)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // If parsing fails, try as array
             try {
                 val jsonArray = JSONArray(json)
@@ -37,7 +37,7 @@ object JsonParser {
                 } else {
                     null
                 }
-            } catch (e2: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -48,38 +48,38 @@ object JsonParser {
         val nestedClasses = mutableListOf<DartClass>()
         
         jsonObject.keys().forEach { key ->
-            val value = jsonObject.get(key)
+            val value = jsonObject[key]
             val fieldName = key.toCamelCaseField()
             
-            when {
-                value is JSONObject -> {
+            when (value) {
+                is JSONObject -> {
                     val nestedClassName = key.toCamelCase()
                     val nestedClass = parseJsonObject(value, nestedClassName)
                     nestedClasses.add(nestedClass)
-                    fields.add(DartField(fieldName, nestedClassName, false, false))
+                    fields.add(DartField(fieldName, nestedClassName, isNullable = false, isList = false))
                 }
-                value is JSONArray -> {
+                is JSONArray -> {
                     if (value.length() > 0) {
-                        val firstItem = value.get(0)
+                        val firstItem = value[0]
                         if (firstItem is JSONObject) {
                             val nestedClassName = key.toCamelCase().removeSuffix("s")
                             val nestedClass = parseJsonObject(firstItem, nestedClassName)
                             nestedClasses.add(nestedClass)
-                            fields.add(DartField(fieldName, nestedClassName, false, true))
+                            fields.add(DartField(fieldName, nestedClassName, isNullable = false, isList = true))
                         } else {
                             val dartType = inferDartType(firstItem)
-                            fields.add(DartField(fieldName, dartType, false, true))
+                            fields.add(DartField(fieldName, dartType, isNullable = false, isList = true))
                         }
                     } else {
-                        fields.add(DartField(fieldName, "dynamic", false, true))
+                        fields.add(DartField(fieldName, "dynamic", isNullable = false, isList = true))
                     }
                 }
-                value == JSONObject.NULL -> {
-                    fields.add(DartField(fieldName, "dynamic", true, false))
+                JSONObject.NULL -> {
+                    fields.add(DartField(fieldName, "dynamic", isNullable = true, isList = false))
                 }
                 else -> {
                     val dartType = inferDartType(value)
-                    fields.add(DartField(fieldName, dartType, false, false))
+                    fields.add(DartField(fieldName, dartType, isNullable = false, isList = false))
                 }
             }
         }
@@ -112,7 +112,7 @@ object JsonParser {
         }
         
         // Add JSON comment if provided
-        if (originalJson != null && originalJson.isNotBlank()) {
+        if (!originalJson.isNullOrBlank()) {
             buffer.append("/// Generated from JSON:\n")
             buffer.append("/// ```json\n")
             originalJson.lines().forEach { line ->
@@ -169,7 +169,7 @@ object JsonParser {
                     if (field.type != "dynamic") {
                         buffer.append(" as ${field.type}?")
                     }
-                    if (!field.isNullable && defaultValue != null) {
+                    if (!field.isNullable && (defaultValue != null)) {
                         buffer.append(" ?? $defaultValue")
                     }
                     buffer.append(",\n")
@@ -227,7 +227,7 @@ fun String.toCamelCaseField(): String {
     val parts = this.split("_", "-")
     if (parts.isEmpty()) return this
     
-    return parts[0].lowercase() + parts.drop(1).joinToString("") {
+    return parts[0].lowercase() + parts.asSequence().drop(1).joinToString("") {
         it.replaceFirstChar { char -> char.uppercaseChar() }
     }
 }
