@@ -263,7 +263,7 @@ import 'presentation/manager/${name.toSnakeCase()}_cubit.dart';
                 functions.mapIndexed { _, function ->
                     """
                    Future<void> ${function}(dynamic query) => Fetcher.fetchWithBase(
-        fetcher: _${function}UseCase.call(params: query),
+        fetcher:()=> _${function}UseCase.call(params: query),
         state: state.${function}State,
         emitter: (newState) => emit(state.copyWith(${function}State: newState)),
       );                 
